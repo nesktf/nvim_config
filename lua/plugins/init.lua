@@ -1,0 +1,231 @@
+local lspconfig = require("plugins.lspconfig")
+local gruvbox = require("plugins.gruvbox")
+local luasnip = require("plugins.luasnip")
+local nvim_autopairs = require("plugins.nvim-autopairs")
+local nvim_cmp = require("plugins.nvim-cmp")
+local nvim_treesitter = require("plugins.nvim-treesitter")
+
+local _M = {}
+
+local plugins = {
+  {
+    "ellisonleao/gruvbox.nvim",
+    priority = 1000,
+    opts = {
+      terminal_colors = false,
+      transparent_mode = true,
+      bold = false,
+      overrides = gruvbox.overrides,
+    },
+    init = function()
+      vim.cmd [[colorscheme gruvbox]]
+    end,
+  },
+
+  {
+    "neovim/nvim-lspconfig",
+    lazy = false,
+    event = "User FilePost",
+    config = lspconfig.config,
+  },
+
+  {
+    "nvim-tree/nvim-tree.lua",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    cmd = { "NvimTreeToggle", "NvimTreeFocus" },
+    opts = {
+      view = {
+        signcolumn = "no",
+      },
+      git = {
+        enable = true,
+      },
+      renderer = {
+        highlight_git = true,
+        icons = {
+          show = {
+            git = true,
+          },
+        },
+        root_folder_label = false,
+      },
+      filters = {
+        enable = true,
+        git_ignored = true,
+        dotfiles = true,
+        custom = { "^.git$" },
+      },
+    },
+  },
+
+  {
+    "hrsh7th/nvim-cmp",
+    event = "InsertEnter",
+    dependencies = { 
+      {
+        "L3MON4D3/LuaSnip",
+        dependencies = { "rafamadriz/friendly-snippets" },
+        opts = {
+          history = true,
+          updateevents = "TextChanged,TextChangedI"
+        },
+        config = luasnip.config,
+      },
+      {
+        "windwp/nvim-autopairs",
+        opts = {
+          fast_wrap = {},
+          disable_filetype = { "TelescopePrompt", "vim" },
+        },
+        config = nvim_autopairs.config,
+      },
+      {
+        "saadparwaiz1/cmp_luasnip",
+        "hrsh7th/cmp-nvim-lsp",
+        "hrsh7th/cmp-nvim-lua",
+        "hrsh7th/cmp-buffer",
+        "hrsh7th/cmp-path",
+        "hrsh7th/cmp-cmdline",
+      },
+    },
+    config = nvim_cmp.config,
+  },
+
+  {
+    "nvim-telescope/telescope.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    tag = "0.1.8",
+  },
+
+  {
+    "nvim-lualine/lualine.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      options = {
+        theme = "gruvbox",
+        globalstatus = true,
+      },
+    }
+  },
+
+  {
+    "akinsho/bufferline.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {},
+  },
+
+  {
+    "NvChad/nvterm",
+    opts = {},
+  },
+
+  {
+    "nvim-treesitter/nvim-treesitter",
+    event = { "BufReadPost", "BufNewFile" },
+    cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
+    build = ":TSUpdate",
+    config = nvim_treesitter.config,
+  },
+
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    keys = { "<leader>", "<c-r>", "<c-w>", '"', "'", "`", "c", "v", "g" },
+    cmd = "WhichKey",
+    opts = {},
+  },
+
+  {
+    "numToStr/Comment.nvim",
+    keys = {
+      { "gcc", mode = "n", desc = "Comment toggle current line" },
+      { "gc", mode = { "n", "o" }, desc = "Comment toggle linewise" },
+      { "gc", mode = "x", desc = "Comment toggle linewise (visual)" },
+      { "gbc", mode = "n", desc = "Comment toggle current block" },
+      { "gb", mode = { "n", "o" }, desc = "Comment toggle blockwise" },
+      { "gb", mode = "x", desc = "Comment toggle blockwise (visual)" },
+    },
+    opts = {},
+  },
+
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    version = "2.20.7",
+    opts = {
+      indentLine_enabled = 1,
+      filetype_exclude = {
+        "help",
+        "terminal",
+        "lazy",
+        "lspinfo",
+        "TelescopePrompt",
+        "TelescopeResults",
+        "mason",
+        "nvdash",
+        "nvcheatsheet",
+        "",
+      },
+      buftype_exclude = { "terminal" },
+      show_trailing_blankline_indent = true,
+      show_first_indent_level = false,
+      show_current_context = true,
+      show_current_context_start = true,
+    },
+  },
+
+  {
+    "lewis6991/gitsigns.nvim",
+    opts = {
+      signs = {
+        add = { text = "│" },
+        change = { text = "│" },
+        delete = { text = "󰍵" },
+        topdelete = { text = "‾" },
+        changedelete = { text = "~" },
+        untracked = { text = "│" },
+      },
+    },
+  },
+
+  {
+    "filipdutescu/renamer.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    opts = {},
+  },
+
+  {
+    "norcalli/nvim-colorizer.lua",
+    opts = {},
+  },
+
+  {
+    "iamcco/markdown-preview.nvim",
+    lazy = false,
+    build = "cd app & npm install",
+    ft = { "markdown" },
+    config = function()
+      vim.g.mkd_filetypes = { "markdown" }
+      vim.g.mkdp_browser = "librewolf"
+      vim.g.mkdp_page_title = "markdown-preview"
+    end,
+  },
+
+  {
+    "andweeb/presence.nvim",
+    lazy = false,
+    opts = {
+      auto_update = true,
+      show_time = true,
+    }
+  },
+
+  {
+    "tpope/vim-fugitive",
+  },
+}
+
+function _M.get()
+  return plugins
+end
+
+return _M
