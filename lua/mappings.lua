@@ -1,98 +1,115 @@
+local telescope = require("plugins.telescope")
+
 local _M = {}
 
-local function __map(modes, input, desc, cmd)
+local function _map(modes, input, desc, cmd)
   return {modes, input, cmd, desc}
 end
 
+
 local mappings = {
   -- nvim-tree
-  __map('n', '<C-n>', "Toggle NvimTree",
+  _map('n', '<C-n>', "Toggle NvimTree",
     '<cmd>NvimTreeToggle<CR>'
   ),
 
+  _map('n', '<leader>tp', "AMOGUS", function()
+    telescope.show_garbage()
+  end),
+
   -- nvterm
-  __map({'n', 't'}, '<A-i>', "Toggle floating terminal", function()
+  _map('n', '<leader>tf', "Toggle floating terminal", function()
     require("nvterm.terminal").toggle("float")
   end),
-  __map({'n', 't'}, '<A-v>', "Toggle floating terminal", function()
+  _map('n', '<leader>tv', "Toggle vertical terminal", function()
     require("nvterm.terminal").toggle("vertical")
   end),
-  __map({'n', 't'}, '<A-h>', "Toggle floating terminal", function()
+  _map('n', '<leader>th', "Toggle horizontal terminal", function()
     require("nvterm.terminal").toggle("horizontal")
   end),
 
+  _map('n', '<leader>tr', "Call run.sh", function()
+    require("nvterm.terminal").send("./run.sh", "horizontal")
+  end),
+
+  _map('n', '<leader>tb', "Call build.sh", function()
+    require("nvterm.terminal").send("./build.sh", "vertical")
+  end),
+
   -- bufferline
-  __map('n', '<tab>', 'Next buffer',
+  _map('n', '<tab>', 'Next buffer',
     '<cmd>BufferLineCycleNext<CR>'
   ),
-  __map('n', '<S-tab>', 'Previous buffer',
+  _map('n', '<S-tab>', 'Previous buffer',
     '<cmd>BufferLineCyclePrev<CR>'
   ),
-  __map('n', '<leader>x', 'Close buffer',
+  _map('n', '<leader>x', 'Close buffer',
     '<cmd>bd<CR>'
   ),
 
   -- comment
-  __map('n', '<leader>/', 'Toggle comment', function()
+  _map('n', '<leader>/', 'Toggle comment', function()
     require("Comment.api").toggle.linewise.current()
   end),
-  __map('v', '<leader>/', 'Toggle comment',
+  _map('v', '<leader>/', 'Toggle comment',
     "<ESC><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>"
   ),
 
   -- renamer
-  __map('n', '<leader>ra', 'LSP rename', function()
+  _map('n', '<leader>ra', 'LSP rename', function()
     require("renamer").rename()
   end),
 
   --telescope
-  __map('n', '<leader>ff', "Telescope find files", function()
+  _map('n', '<leader>ff', "Telescope find files", function()
     require("telescope.builtin").find_files()
   end),
-  __map('n', '<leader>fg', "Telescope live grep", function()
+  _map('n', '<leader>fg', "Telescope live grep", function()
   require("telescope.builtin").live_grep()
   end),
-  __map('n', '<leader>fb', "Telescope buffers", function()
+  _map('n', '<leader>fb', "Telescope buffers", function()
     require("telescope.builtin").buffers()
   end),
-  __map('n', '<leader>fh', "Telescope help tags", function()
+  _map('n', '<leader>fh', "Telescope help tags", function()
   require("telescope.builtin").help_tags()
   end),
 
   -- misc
-  __map('n', '<Esc>', "Clear highlights",
+  _map('n', '<Esc>', "Clear highlights",
     '<cmd>noh<CR>'
   ),
-  __map('n', '<C-h>', "Go to left window",
+  _map('n', '<C-h>', "Go to left window",
     '<C-w>h'
   ),
-  __map('n', '<C-l>', "Go to right window",
+  _map('n', '<C-l>', "Go to right window",
     '<C-w>l'
   ),
-  __map('n', '<C-j>', "Go to bottom window",
+  _map('n', '<C-j>', "Go to bottom window",
     '<C-w>j'
   ),
-  __map('n', '<C-k>', "Go to upper window",
+  _map('n', '<C-k>', "Go to upper window",
     '<C-w>k'
   ),
-  __map('i', '<C-h>', "Left",
+  _map('i', '<C-h>', "Left",
     '<Left>'
   ),
-  __map('i', '<C-l>', "Right",
+  _map('i', '<C-l>', "Right",
     '<Right>'
   ),
-  __map('i', '<C-j>', "Down",
+  _map('i', '<C-j>', "Down",
     '<Down>'
   ),
-  __map('i', '<C-k>', "Up",
+  _map('i', '<C-k>', "Up",
     '<Up>'
   ),
-  __map('v', '<', "Indent left",
+  _map('v', '<', "Indent left",
     '<gv'
   ),
-  __map('v', '>', "Indent right",
+  _map('v', '>', "Indent right",
     '>gv'
   ),
+
+  _map('t', '<Esc>', 'Exit terminal mode', "<C-\\><C-n>"),
 }
 
 function _M.get()

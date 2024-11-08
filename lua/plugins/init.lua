@@ -4,6 +4,7 @@ local luasnip = require("plugins.luasnip")
 local nvim_autopairs = require("plugins.nvim-autopairs")
 local nvim_cmp = require("plugins.nvim-cmp")
 local nvim_treesitter = require("plugins.nvim-treesitter")
+local telescope = require("plugins.telescope")
 
 local _M = {}
 
@@ -95,6 +96,7 @@ local plugins = {
     "nvim-telescope/telescope.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     tag = "0.1.8",
+    config = telescope.config,
   },
 
   {
