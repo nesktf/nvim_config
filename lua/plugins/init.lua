@@ -5,6 +5,7 @@ local nvim_autopairs = require("plugins.nvim-autopairs")
 local nvim_cmp = require("plugins.nvim-cmp")
 local nvim_treesitter = require("plugins.nvim-treesitter")
 local telescope = require("plugins.telescope")
+local render_markdown = require("plugins.render-markdown")
 
 local _M = {}
 
@@ -209,6 +210,7 @@ local plugins = {
       vim.g.mkd_filetypes = { "markdown" }
       vim.g.mkdp_browser = "librewolf"
       vim.g.mkdp_page_title = "markdown-preview"
+      vim.g.mkdp_auto_close = 0
     end,
   },
 
@@ -223,6 +225,13 @@ local plugins = {
 
   {
     "tpope/vim-fugitive",
+  },
+
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
+    config = render_markdown.config,
+    -- opts = {},
   },
 }
 
