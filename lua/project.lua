@@ -2,6 +2,23 @@ local toml = require("toml")
 local mappings = require("mappings")
 local inspect = require("inspect")
 
+-- Sample file:
+--
+-- [_PROJECT]
+-- run=""
+-- clean="rm -rf ./build"
+-- build="make -C build -j4"
+-- config="cmake -B build"
+-- target="demo_hello_cirno"
+-- target_config="debug"
+--
+-- [demo_hello_cirno]
+-- run="./build/demos/hello_cirno"
+--
+-- [demo_hello_cirno.configs]
+-- debug=["-DCMAKE_BUILD_TYPE=Debug", "-DSHOGLE_ENABLE_IMGUI=1", "-DSHOGLE_BUILD_DEMOS=1"]
+-- release=["-DCMAKE_BUILD_TYPE=Release", "-DSHOGLE_ENABLE_IMGUI=1", "-DSHOGLE_BUILD_DEMOS=1"]
+
 local function first_key(table)
   for k,_ in pairs(table) do
     return k

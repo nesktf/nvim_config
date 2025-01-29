@@ -1,22 +1,5 @@
 local kset = vim.keymap.set
 
--- Sample file:
---
--- [_PROJECT]
--- run=""
--- clean="rm -rf ./build"
--- build="make -C build -j4"
--- config="cmake -B build"
--- target="demo_hello_cirno"
--- target_config="debug"
---
--- [demo_hello_cirno]
--- run="./build/demos/hello_cirno"
---
--- [demo_hello_cirno.configs]
--- debug=["-DCMAKE_BUILD_TYPE=Debug", "-DSHOGLE_ENABLE_IMGUI=1", "-DSHOGLE_BUILD_DEMOS=1"]
--- release=["-DCMAKE_BUILD_TYPE=Release", "-DSHOGLE_ENABLE_IMGUI=1", "-DSHOGLE_BUILD_DEMOS=1"]
-
 local function cmd(str)
   return string.format("<cmd>%s<CR>", str)
 end
