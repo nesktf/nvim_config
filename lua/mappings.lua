@@ -185,16 +185,16 @@ local function apply_lsp(bufnr, client)
 end
 
 local function apply_project()
-  kset('n', '<leader>cb',
+  kset('n', '<leader>pb',
     cmd("ProjBuild"),
     {noremap=true, silent=true, desc="Build project"})
-  kset('n', '<leader>cr',
+  kset('n', '<leader>pr',
     cmd("ProjRun"),
     {noremap=true, silent=true, desc="Run project"})
-  kset('n', '<leader>ca',
+  kset('n', '<leader>pa',
     cmd("ProjBuildRun"),
     {noremap=true, silent=true, desc="Build and run project"})
-  kset('n', '<leader>cc',
+  kset('n', '<leader>pc',
     cmd("ProjClean"),
     {noremap=true, silent=true, desc="Clean project"})
 end

@@ -108,9 +108,8 @@ end
 local state = {}
 
 local function init()
-  local proj, err = parse_project("./.project.toml")
+  local proj = parse_project("./.project.toml")
   if (not proj) then
-    vim.cmd(string.format("TermExec cmd='echo %s'", err))
     return
   end
 
