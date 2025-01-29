@@ -6,8 +6,7 @@ local nvim_cmp = require("plugins.nvim-cmp")
 local nvim_treesitter = require("plugins.nvim-treesitter")
 local telescope = require("plugins.telescope")
 local render_markdown = require("plugins.render-markdown")
-
-local _M = {}
+local toggleterm = require('plugins.toggleterm')
 
 local plugins = {
   {
@@ -117,9 +116,14 @@ local plugins = {
     opts = {},
   },
 
+  -- {
+  --   "NvChad/nvterm",
+  --   opts = {},
+  -- },
+
   {
-    "NvChad/nvterm",
-    opts = {},
+    "akinsho/toggleterm.nvim",
+    config = toggleterm.config,
   },
 
   {
@@ -233,10 +237,51 @@ local plugins = {
     config = render_markdown.config,
     -- opts = {},
   },
+  {
+    "Badhi/nvim-treesitter-cpp-tools",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    opts = function()
+      local options = {
+        preview = {
+          quit = "q", -- optional keymapping for quit preview
+          accept = "<tab>", -- optional keymapping for accept preview
+        },
+        header_extension = "h", -- optional
+        source_extension = "cpp", -- optional
+        custom_define_class_function_commands = { -- optional
+          TSCppImplWrite = {
+            output_handle = require("nt-cpp-tools.output_handlers").get_add_to_cpp(),
+          },
+          --[[
+          <your impl function custom command name> = {
+              output_handle = function (str, context) 
+                  -- string contains the class implementation
+                  -- do whatever you want to do with it
+              end
+          }
+          ]]
+        },
+      }
+      return options
+    end,
+    config = true,
+  },
 }
 
-function _M.get()
-  return plugins
-end
+return {
+  load = function()
+    local lazy_path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+    if not (vim.uv or vim.loop).fs_stat(lazy_path) then
+      local lazy_repo = "https://github.com/folke/lazy.nvim.git"
+      vim.fn.system{"git", "clone", "--filter=blob:none", "--branch=stable", lazy_repo, lazy_path}
+    end
+    vim.opt.rtp:prepend(lazy_path)
 
-return _M
+    require("lazy").setup(plugins, {
+      checker = {
+        enabled = false
+      },
+    })
+  end
+}
+

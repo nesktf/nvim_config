@@ -1,30 +1,6 @@
 local plugins = require("plugins")
 local mappings = require("mappings")
 
-local function load_plugins()
-  local lazy_path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-  if not (vim.uv or vim.loop).fs_stat(lazy_path) then
-    local lazy_repo = "https://github.com/folke/lazy.nvim.git"
-    vim.fn.system({"git", "clone", "--filter=blob:none", "--branch=stable", lazy_repo, lazy_path})
-  end
-  vim.opt.rtp:prepend(lazy_path)
-
-  require("lazy").setup(plugins.get(), {
-    checker = {
-      enabled = false
-    },
-  })
-end
-
-local function load_mappings()
-  local defopts = { noremap = true, silent = true }
-  for _, map in ipairs(mappings.get()) do
-    local opts = defopts
-    opts.desc = map[4]
-    vim.keymap.set(map[1], map[2], map[3], opts)
-  end
-end
-
 function main()
   local opt = vim.o
   local editor = vim.g
@@ -67,6 +43,7 @@ function main()
     }
   }
 
-  load_plugins()
-  load_mappings()
+  plugins.load()
+  mappings.apply_general()
+  require("project").init()
 end

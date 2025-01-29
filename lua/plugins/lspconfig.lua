@@ -1,6 +1,6 @@
-local _M = {}
+local mappings = require("mappings")
 
-function _M.config()
+local function config()
   local lsp = require("lspconfig")
   local capabilities = vim.lsp.protocol.make_client_capabilities()
 
@@ -37,30 +37,10 @@ function _M.config()
 
   capabilities.offsetEncoding = { "utf-16" }
 
-  local function on_attach(_, bufnr)
+  local function on_attach(client, bufnr)
     -- client.server_capabilities.semanticTokensProvider = nil
-
     vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
-    local set_keymap = vim.keymap.set
-
-    local opts = { buffer=bufnr, noremap=true, silent=true}
-    set_keymap('n', 'gD', vim.lsp.buf.declaration, opts)
-    set_keymap('n', 'gd', vim.lsp.buf.definition, opts)
-    set_keymap('n', 'K', vim.lsp.buf.hover, opts)
-    set_keymap('n', 'gi', vim.lsp.buf.implementation, opts)
-    -- set_keymap('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-    set_keymap('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
-    set_keymap('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
-    set_keymap('n', '<space>wl', function()
-      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-    end, opts)
-    set_keymap('n', '<space>D', vim.lsp.buf.type_definition, opts)
-    set_keymap('n', '<space>rn', vim.lsp.buf.rename, opts)
-    set_keymap('n', 'gr', vim.lsp.buf.references, opts)
-    set_keymap('n', '<space>e', vim.diagnostic.open_float, opts)
-    set_keymap('n', '[d', vim.diagnostic.goto_prev, opts)
-    set_keymap('n', ']d', vim.diagnostic.goto_next, opts)
-    set_keymap('n', '<space>q', vim.diagnostic.setloclist, opts)
+    mappings.apply_lsp(bufnr, client)
   end
 
   lsp["clangd"].setup {
@@ -68,8 +48,9 @@ function _M.config()
     capabilities = capabilities,
     cmd = {
       "/usr/bin/clangd",
-      "--background-index",
+      "--background-index=false",
       "--completion-style=detailed",
+      -- "--clang-tidy",
     },
     filetypes = { "c", "h", "cpp", "hpp", "inl", "tpp" },
   }
@@ -90,4 +71,6 @@ function _M.config()
   }
 end
 
-return _M
+return {
+  config = config
+}

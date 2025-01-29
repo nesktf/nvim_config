@@ -1,119 +1,223 @@
-local telescope = require("plugins.telescope")
+local kset = vim.keymap.set
 
-local _M = {}
+-- Sample file:
+--
+-- [_PROJECT]
+-- run=""
+-- clean="rm -rf ./build"
+-- build="make -C build -j4"
+-- config="cmake -B build"
+-- target="demo_hello_cirno"
+-- target_config="debug"
+--
+-- [demo_hello_cirno]
+-- run="./build/demos/hello_cirno"
+--
+-- [demo_hello_cirno.configs]
+-- debug=["-DCMAKE_BUILD_TYPE=Debug", "-DSHOGLE_ENABLE_IMGUI=1", "-DSHOGLE_BUILD_DEMOS=1"]
+-- release=["-DCMAKE_BUILD_TYPE=Release", "-DSHOGLE_ENABLE_IMGUI=1", "-DSHOGLE_BUILD_DEMOS=1"]
 
-local function _map(modes, input, desc, cmd)
-  return {modes, input, cmd, desc}
+local function cmd(str)
+  return string.format("<cmd>%s<CR>", str)
 end
 
+local function cmdesc(str)
+  return string.format('<ESC><cmd>%s<CR>', str)
+end
 
-local mappings = {
-  -- nvim-tree
-  _map('n', '<C-n>', "Toggle NvimTree",
-    '<cmd>NvimTreeToggle<CR>'
-  ),
+local function apply_general()
+  kset('n', '<leader>wk',
+    cmd("WhichKey"),
+    {noremap=true, silent=true, desc="WhichKey"})
 
-  _map('n', '<leader>tp', "AMOGUS", function()
-    telescope.show_garbage()
-  end),
+  kset('n', '<tab>',
+    cmd("BufferLineCycleNext"), 
+    {noremap=true, silent=true, desc="Next buffer"})
+  kset('n', '<s-tab>',
+    cmd("BufferLineCyclePrev"),
+    {noremap=true, silent=true, desc="Previous buffer"})
+  kset('n', '<leader>x',
+    cmd('bd'),
+    {noremap=true, silent=true, desc="Close buffer"})
 
-  -- nvterm
-  _map('n', '<leader>tf', "Toggle floating terminal", function()
-    require("nvterm.terminal").toggle("float")
-  end),
-  _map('n', '<leader>tv', "Toggle vertical terminal", function()
-    require("nvterm.terminal").toggle("vertical")
-  end),
-  _map('n', '<leader>th', "Toggle horizontal terminal", function()
-    require("nvterm.terminal").toggle("horizontal")
-  end),
+  kset('n', '<leader>l',
+    cmd('tabnext'),
+    {noremap=true, silent=true, desc="Next tab"})
+  kset('n', '<leader>h',
+    cmd('tabprev'),
+    {noremap=true, silent=true, desc="Previous tab"})
 
-  _map('n', '<leader>tr', "Call run.sh", function()
-    require("nvterm.terminal").send("./run.sh", "horizontal")
-  end),
+  kset('n', '<C-n>',
+    cmd("NvimTreeToggle"),
+    {noremap=true, silent=true, desc="Toggle NvimTree"})
 
-  _map('n', '<leader>tb', "Call build.sh", function()
-    require("nvterm.terminal").send("./build.sh", "vertical")
-  end),
-
-  -- bufferline
-  _map('n', '<tab>', 'Next buffer',
-    '<cmd>BufferLineCycleNext<CR>'
-  ),
-  _map('n', '<S-tab>', 'Previous buffer',
-    '<cmd>BufferLineCyclePrev<CR>'
-  ),
-  _map('n', '<leader>x', 'Close buffer',
-    '<cmd>bd<CR>'
-  ),
-
-  -- comment
-  _map('n', '<leader>/', 'Toggle comment', function()
+  kset('n', '<leader>/', function()
     require("Comment.api").toggle.linewise.current()
-  end),
-  _map('v', '<leader>/', 'Toggle comment',
-    "<ESC><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>"
-  ),
+  end, {noremap=true, silent=true, desc="Toggle comment"})
+  kset('v', '<leader>/',
+    cmdesc("lua require('Comment.api').toggle.linewise(vim.fn.visualmode())"),
+    {noremap=true, silent=true,})
 
-  -- renamer
-  _map('n', '<leader>ra', 'LSP rename', function()
-    require("renamer").rename()
-  end),
-
-  --telescope
-  _map('n', '<leader>ff', "Telescope find files", function()
+  kset('n', '<leader>ff', function()
     require("telescope.builtin").find_files()
-  end),
-  _map('n', '<leader>fg', "Telescope live grep", function()
-  require("telescope.builtin").live_grep()
-  end),
-  _map('n', '<leader>fb', "Telescope buffers", function()
+  end, {noremap=true, silent=true, desc="Telescope find files"})
+  kset('n', '<leader>fg', function()
+    require("telescope.builtin").live_grep()
+  end, {noremap=true, silent=true, desc="Telescope live grep"})
+  kset('n', '<leader>fb', function()
     require("telescope.builtin").buffers()
-  end),
-  _map('n', '<leader>fh', "Telescope help tags", function()
-  require("telescope.builtin").help_tags()
-  end),
+  end, {noremap=true, silent=true, desc="Telescope find buffer"})
+  kset('n', '<leader>fh', function()
+    require("telescope.builtin").help_tags()
+  end, {noremap=true, silent=true, desc="Telescope help tags"})
 
-  -- misc
-  _map('n', '<Esc>', "Clear highlights",
-    '<cmd>noh<CR>'
-  ),
-  _map('n', '<C-h>', "Go to left window",
-    '<C-w>h'
-  ),
-  _map('n', '<C-l>', "Go to right window",
-    '<C-w>l'
-  ),
-  _map('n', '<C-j>', "Go to bottom window",
-    '<C-w>j'
-  ),
-  _map('n', '<C-k>', "Go to upper window",
-    '<C-w>k'
-  ),
-  _map('i', '<C-h>', "Left",
-    '<Left>'
-  ),
-  _map('i', '<C-l>', "Right",
-    '<Right>'
-  ),
-  _map('i', '<C-j>', "Down",
-    '<Down>'
-  ),
-  _map('i', '<C-k>', "Up",
-    '<Up>'
-  ),
-  _map('v', '<', "Indent left",
-    '<gv'
-  ),
-  _map('v', '>', "Indent right",
-    '>gv'
-  ),
+  kset('n', '<ESC>',
+    cmd("noh"),
+    {noremap=true, silent=true, desc="Clear highlights"})
 
-  _map('t', '<Esc>', 'Exit terminal mode', "<C-\\><C-n>"),
-}
+  kset('n', '<C-h>',
+    "<C-w>h",
+    {noremap=true, silent=true, desc="Left window"})
+  kset('n', '<C-l>',
+    "<C-w>l",
+    {noremap=true, silent=true, desc="Right window"})
+  kset('n', '<C-k>',
+    "<C-w>k",
+    {noremap=true, silent=true, desc="Upper window"})
+  kset('n', '<C-j>',
+    "<C-w>j",
+    {noremap=true, silent=true, desc="Bottom window"})
 
-function _M.get()
-  return mappings
+  kset('i', '<C-h>',
+    '<Left>',
+    {noremap=true, silent=true, desc="Left"})
+  kset('i', '<C-l>',
+    '<Right>',
+    {noremap=true, silent=true, desc="Right"})
+  kset('i', '<C-k>',
+    '<Up>',
+    {noremap=true, silent=true, desc="Up"})
+  kset('i', '<C-j>',
+    '<Down>',
+    {noremap=true, silent=true, desc="Down"})
+
+  kset('c', '<',
+    '<gv',
+    {noremap=true, silent=true, desc="Indent left"})
+  kset('c', '>',
+    '>gv',
+    {noremap=true, silent=true, desc="Indent right"})
+
+  kset('t', '<Esc>',
+    '<C-\\><C-n>',
+    {noremap=true, silent=true, desc="Exit terminal mode"})
+
+  kset('n', '<leader>tf',
+    cmd("ToggleTerm direction=float"),
+    {noremap=true, silent=true, desc="Toggle floating terminal"})
+  kset('n', '<leader>th',
+    cmd("ToggleTerm direction=horizontal"),
+    {noremap=true, silent=true, desc="Toggle horizontal terminal"})
+  kset('n', '<leader>tv',
+    cmd("ToggleTerm direction=vertical"),
+    {noremap=true, silent=true, desc="Toggle vertical terminal"})
+  kset('n', '<leader>ts', function()
+    local trim_spaces = true
+    require("toggleterm").send_lines_to_terminal("single_line", trim_spaces, {args= vim.v.count})
+  end, {noremap=true, silent=true, desc="Send line to terminal"})
 end
 
-return _M
+local function apply_lsp(bufnr, client)
+  kset('n', 'gD',
+    vim.lsp.buf.declaration,
+    {buffer=bufnr, noremap=true, silent=true, desc="LSP: Go to declaration"})
+  kset('n', 'gd',
+    vim.lsp.buf.definition,
+    {buffer=bufnr, noremap=true, silent=true, desc="LSP: Go to definition"})
+  kset('n', 'gi',
+    vim.lsp.buf.implementation,
+    {buffer=bufnr, noremap=true, silent=true, desc="LSP: Go to implementation"})
+  kset('n', 'gr',
+    vim.lsp.buf.references,
+    {noremap=true, silent=true, desc="LSP: Go to reference"})
+
+  kset('n', '<leader>k',
+    vim.lsp.buf.signature_help,
+    {buffer=bufnr, noremap=true, silent=true, desc="LSP: Signature help"})
+  kset('n', '<leader>K',
+    vim.lsp.buf.hover,
+    {buffer=bufnr, noremap=true, silent=true, desc="LSP: Hover"})
+
+  kset('n', '<leader>wa',
+    vim.lsp.buf.add_workspace_folder,
+    {buffer=bufnr, noremap=true, silent=true, desc="LSP: Add workspace folder"})
+  kset('n', '<leader>wr',
+    vim.lsp.buf.remove_workspace_folder,
+    {buffer=bufnr, noremap=true, silent=true, desc="LSP: Remove workspace folder"})
+  kset('n', '<leader>wl', function()
+    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+  end, {buffer=bufnr, noremap=true, silent=true, desc="LSP: List workspace folders"})
+
+  kset('n', '<leader>D',
+    vim.lsp.buf.type_definition,
+    {buffer=bufnr, noremap=true, silent=true, desc="LSP: Type definition"})
+  -- kset('n', '<leader>ra',
+  --   vim.lsp.buf.type_definition,
+  --   {buffer=bufnr, noremap=true, silent=true, desc="LSP: Rename"})
+  kset('n', '<leader>ra', function()
+    require("renamer").rename()
+  end, {noremap=true, silent=true, desc="LSP: Rename"})
+
+  kset('n', '<leader>et',
+    vim.diagnostic.open_float,
+    {buffer=bufnr, noremap=true, silent=true, desc="LSP: Diagnostings this"})
+  kset('n', '<leader>el',
+    vim.diagnostic.goto_next,
+    {buffer=bufnr, noremap=true, silent=true, desc="LSP: Diagnostings next"})
+  kset('n', '<leader>eh',
+    vim.diagnostic.goto_next,
+    {buffer=bufnr, noremap=true, silent=true, desc="LSP: Diagnostings prev"})
+  kset('n', '<leader>em',
+    vim.diagnostic.goto_next,
+    {buffer=bufnr, noremap=true, silent=true, desc="LSP: Diagnostings move to"})
+
+  kset('n', '<leader>ca',
+    vim.diagnostic.goto_next,
+    {buffer=bufnr, noremap=true, silent=true, desc="LSP: Code action"})
+
+  if (client.name == "clangd") then
+    kset('n', '<leader>cd',
+      cmd("TSCppDefineClassFunc"),
+      {buffer=bufnr, noremap=true, silent=true, desc="CPP definition"})
+    kset('v', '<leader>cd',
+      "<cmd>'<,'>TSCppDefineClassFunc<CR><ESC>",
+      {buffer=bufnr, noremap=true, silent=true, desc="CPP definition"})
+    kset('n', '<leader>ch',
+      cmd("ClangdSwitchSourceHeader"),
+      {buffer=bufnr, noremap=true, silent=true, desc="Clang switch header/source"})
+    -- kset('n', '<leader>cc', function()
+    --   require("toggleterm").exec("cmake -B build")
+    -- end, {noremap=true, silent=true, desc="CMake build"})
+  end
+end
+
+local function apply_project()
+  kset('n', '<leader>cb',
+    cmd("ProjBuild"),
+    {noremap=true, silent=true, desc="Build project"})
+  kset('n', '<leader>cr',
+    cmd("ProjRun"),
+    {noremap=true, silent=true, desc="Run project"})
+  kset('n', '<leader>ca',
+    cmd("ProjBuildRun"),
+    {noremap=true, silent=true, desc="Build and run project"})
+  kset('n', '<leader>cc',
+    cmd("ProjClean"),
+    {noremap=true, silent=true, desc="Clean project"})
+end
+
+return {
+  apply_general = apply_general,
+  apply_lsp = apply_lsp,
+  apply_project = apply_project,
+}
